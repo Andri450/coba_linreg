@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script data-require="jquery@*" data-semver="2.1.1" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <title>tampil</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <canvas id="myChart3"></canvas>
+            </div>
+            <div class="col">
+                <canvas id="myChartpie"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <canvas id="myChart4"></canvas>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+$(function () {
+
+    $.ajax({
+        url: "http://localhost:3500/getcsv",  
+        success: function(data) {
+
+            let data_asli= []
+            data.data_asli.map((dat, i) => {
+                let dt = {
+                    x: dat.bulan,
+                    y: dat.total
+                }
+                data_asli.push(dt)
+            })
+
+            let data_prediksi = []
+            data.data_prediksi.map((dat, i) => {
+                let dt = {
+                    x: dat.bulan,
+                    y: dat.total
+                }
+                data_prediksi.push(dt)
+            })
+
+            let data_prediksi_md = []
+            data.data_prediksi_masa_depan.map((dat, i) => {
+                let dt = {
+                    x: dat.bulan,
+                    y: dat.total
+                }
+                data_prediksi_md.push(dt)
+            })
+
+            var ctx = document.getElementById("myChart").getContext("2d");
+
+            // draw empty chart
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Data Asli',
+                            data: data_asli,
+                            backgroundColor: 'rgb(34, 102, 141)'
+                        }
+                    ],
+                },
+                options: {}
+            });
+
+            var ctx3 = document.getElementById("myChart3").getContext("2d");
+
+            var myChart3 = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Data Perdiksi',
+                            data: data_prediksi,
+                            backgroundColor: 'rgba(142, 205, 221, 0.5)'
+                        },
+                        {
+                            label: 'Data Asli',
+                            data: data_asli,
+                            backgroundColor: 'rgb(34, 102, 141)'
+                        }
+                    ],
+                },
+                options: {}
+            });
+
+            let akurasi = data.akurasi
+
+            var ctx3p = document.getElementById("myChartpie").getContext("2d");
+            var myChart3p = new Chart(ctx3p, {
+                type: 'doughnut',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Akurasi R Squared (%)',
+                            data: [akurasi, 1 - akurasi],
+                            backgroundColor: [
+                                'rgb(18, 91, 80)',
+                                'rgb(255, 255, 255)'
+                            ],
+                        },
+                    ],
+                    labels: [
+                        'Akurasi (%)',
+                        'Error (%)'
+                    ]
+                },
+                options: {}
+            });
+
+            var ctx4 = document.getElementById("myChart4").getContext("2d");
+            var myChart4 = new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Data Perdiksi Pemasukan Di Masa Depan',
+                            data: data_prediksi_md,
+                            backgroundColor: [
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 0.5)',
+                                'rgba(255, 99, 99, 1)',
+                                'rgba(255, 99, 99, 1)',
+                                'rgba(255, 99, 99, 1)',
+                                'rgba(255, 99, 99, 1)',
+                            ]
+                        },
+                    ],
+                },
+                options: {}
+            });
+
+        }
+    })
+
+});
+</script>
